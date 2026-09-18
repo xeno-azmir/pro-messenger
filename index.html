@@ -4,10 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0f172a">
-<title>AZMIR MESSENGER PRO></title>
+<title>Pro Messenger v14</title>
 <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 <style>
 :root {
@@ -89,20 +88,24 @@ body::before { content:''; position:fixed; inset:-50%; background: radial-gradie
 .user-profile { padding:14px 15px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; flex-shrink:0; }
 .user-profile-info { display:flex; align-items:center; gap:10px; min-width:0; }
 .user-profile-info h4 { color:var(--primary2); font-size:.95rem; }
-.search-box { padding:10px 15px; flex-shrink:0; }
-.search-box input { width:100%; padding:10px 16px; background:var(--bg4); border:1px solid var(--border); color:var(--text); border-radius:22px; outline:none; font-size:16px; transition:all .3s; }
+.search-box { padding:10px 15px; flex-shrink:0; display:flex; gap:6px; align-items:center; }
+.search-box input { flex:1; padding:10px 16px; background:var(--bg4); border:1px solid var(--border); color:var(--text); border-radius:22px; outline:none; font-size:16px; transition:all .3s; }
 .search-box input:focus { border-color:var(--primary2); box-shadow:0 0 0 3px rgba(56,189,248,.1); }
+.search-box .add-btn { background:var(--success); color:#fff; border:none; border-radius:50%; width:40px; height:40px; font-size:1.2rem; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:all .3s; }
+.search-box .add-btn:hover { transform:scale(1.1); }
 .chat-item { padding:12px 15px; display:flex; align-items:center; gap:12px; cursor:pointer; border-bottom:1px solid var(--border); position:relative; transition:all .25s cubic-bezier(.2,.8,.2,1); touch-action:manipulation; }
 .chat-item:hover { background:var(--bg4); transform:translateX(4px); }
 .chat-item:active { transform:scale(.98); }
 .chat-item.active { background:rgba(56,189,248,.12); border-left:3px solid var(--primary2); padding-left:12px; }
 .chat-item.marked-unread { background:rgba(34,197,94,.06); }
 .chat-item.marked-unread .chat-item-info h4::after { content:' ●'; color:var(--success); font-size:.7rem; }
+.chat-item.offline { opacity:.7; }
 .chat-item-info { flex:1; min-width:0; }
 .chat-item-info h4 { font-size:.9rem; margin-bottom:3px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .chat-item-info small { color:var(--text3); font-size:.75rem; display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .badge { background:var(--danger); color:#fff; font-size:.7rem; padding:2px 7px; border-radius:10px; font-weight:bold; animation:heartbeat 1.5s ease-in-out infinite; }
 .online-dot { position:absolute; bottom:12px; left:42px; width:10px; height:10px; border-radius:50%; background:var(--success); border:2px solid var(--bg3); animation:pulse 2s ease-in-out infinite; }
+.offline-dot { position:absolute; bottom:12px; left:42px; width:10px; height:10px; border-radius:50%; background:var(--text3); border:2px solid var(--bg3); }
 
 .avatar { width:44px; height:44px; border-radius:50%; background:var(--sent-bg); display:flex; align-items:center; justify-content:center; font-weight:bold; overflow:hidden; flex-shrink:0; font-size:1rem; color:#fff; transition:transform .3s; }
 .avatar:hover { transform:scale(1.08); }
@@ -139,9 +142,7 @@ body::before { content:''; position:fixed; inset:-50%; background: radial-gradie
 .msg-meta.sent-meta { color:rgba(255,255,255,.7); }
 .reaction-display { position:absolute; bottom:-10px; background:var(--bg3); border:1px solid var(--border); border-radius:12px; padding:2px 6px; font-size:.85rem; z-index:2; animation:msgIn .2s; }
 .reaction-display span, .reaction-display img { display:inline-block; animation:emojiFloat 2s ease-in-out infinite; }
-.reaction-display span:nth-child(2) { animation-delay:.2s; }
-.reaction-display span:nth-child(3) { animation-delay:.4s; }
-.custom-emoji { width:24px; height:24px; vertical-align:middle; display:inline-block; animation:emojiFloat 2.5s ease-in-out infinite; }
+.custom-emoji { width:24px; height:24px; vertical-align:middle; display:inline-block; }
 .typing-dots { display:inline-flex; gap:3px; margin-left:6px; }
 .typing-dots span { width:5px; height:5px; border-radius:50%; background:var(--primary2); animation:typingDot 1.4s infinite; }
 .typing-dots span:nth-child(2) { animation-delay:.2s; }
@@ -152,11 +153,11 @@ body::before { content:''; position:fixed; inset:-50%; background: radial-gradie
 .input-area input[type="text"] { flex:1; padding:11px 16px; border-radius:22px; border:1px solid var(--border); background:var(--bg4); color:var(--text); outline:none; font-size:16px; min-width:0; transition:all .3s; }
 .input-area input[type="text"]:focus { border-color:var(--primary2); box-shadow:0 0 0 3px rgba(56,189,248,.1); }
 
-.btn { padding:8px 14px; background:var(--sent-bg); color:#fff; border:none; border-radius:15px; font-weight:600; cursor:pointer; font-size:.85rem; transition:all .25s cubic-bezier(.2,.8,.2,1); position:relative; overflow:hidden; touch-action:manipulation; }
+.btn { padding:8px 14px; background:var(--sent-bg); color:#fff; border:none; border-radius:15px; font-weight:600; cursor:pointer; font-size:.85rem; transition:all .25s; position:relative; overflow:hidden; touch-action:manipulation; }
 .btn:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(2,132,199,.4); }
 .btn:active { transform:scale(.97); }
 .btn-sm { font-size:.72rem; padding:5px 10px; border-radius:8px; }
-.btn-icon { background:var(--bg4); border:1px solid var(--border); border-radius:50%; width:38px; height:38px; display:flex; justify-content:center; align-items:center; padding:0; font-size:1rem; cursor:pointer; color:var(--text); flex-shrink:0; transition:all .25s cubic-bezier(.2,.8,.2,1); touch-action:manipulation; }
+.btn-icon { background:var(--bg4); border:1px solid var(--border); border-radius:50%; width:38px; height:38px; display:flex; justify-content:center; align-items:center; padding:0; font-size:1rem; cursor:pointer; color:var(--text); flex-shrink:0; transition:all .25s; touch-action:manipulation; }
 .btn-icon:hover { background:var(--bg5); transform:scale(1.1) rotate(5deg); }
 .btn-icon:active { transform:scale(.95); }
 .btn-icon.recording { background:var(--danger) !important; animation:recPulse 1s infinite; }
@@ -307,7 +308,6 @@ body::before { content:''; position:fixed; inset:-50%; background: radial-gradie
 
 .mobile-back { display:none; }
 
-/* ============ MOBILE OPTIMIZATION ============ */
 @media (max-width:480px) {
   .auth-card { width:92%; padding:28px 20px; border-radius:20px; }
   .auth-logo { width:65px; height:65px; font-size:1.8rem; margin-bottom:14px; }
@@ -316,61 +316,50 @@ body::before { content:''; position:fixed; inset:-50%; background: radial-gradie
   .auth-card input { padding:12px 14px; margin-bottom:10px; }
   .auth-card button { padding:13px; }
 }
-
 @media (max-width:768px) {
   .sidebar { width:100%; }
   .chat-window { display:none; position:absolute; inset:0; z-index:10; width:100%; }
   .chat-window.mobile-active { display:flex; animation:slideInRight .3s; }
   .mobile-back { display:flex; }
-
   .nav-tab { min-width:80px; padding:12px 10px; font-size:.78rem; flex-shrink:0; }
   .chat-header { padding:10px 12px; gap:6px; }
   .chat-header-left h4 { font-size:.88rem; }
   .chat-header-left small { font-size:.68rem; }
   .chat-header .btn-icon { width:34px; height:34px; font-size:.9rem; }
-
   .messages-area { padding:12px 10px; gap:4px; }
   .message-wrap { max-width:85%; }
   .message { padding:8px 12px; font-size:.88rem; }
   .message img { max-width:180px; }
-
   .input-area { padding:8px 10px; gap:5px; }
   .input-area .btn-icon { width:36px; height:36px; min-width:36px; font-size:.9rem; }
-  .input-area .btn-icon[onclick*="toggleGIF"] { display: none; }
-
   .emoji-picker, .gif-picker { left:8px; right:8px; width:auto; max-width: none; }
   .emoji-grid { grid-template-columns:repeat(7,1fr); }
   .gif-grid { grid-template-columns:repeat(2,1fr); }
-
   .modal-content { width:95%; max-width: none; padding:20px 16px; border-radius:18px; max-height: 92dvh; }
   .modal-content h3 { font-size:1.05rem; }
   .settings-row { padding:11px 0; font-size:.82rem; }
   .bubble-grid { grid-template-columns:repeat(4,1fr); gap:8px; }
   .bubble-opt { height:40px; border-radius:11px; }
-
   .video-local { width:90px; height:125px; bottom:calc(90px + env(safe-area-inset-bottom)); right:12px; }
   .video-info-bar { font-size:.75rem; padding:6px 12px; top:12px; left:12px; }
   .call-duration { font-size:.75rem; padding:6px 12px; top:12px; right:12px; }
   .video-controls { padding:16px; gap:12px; }
   .vc-btn { width:50px; height:50px; font-size:1.15rem; }
-
   .admin-view { padding:14px; }
   .stat-grid { grid-template-columns:repeat(2,1fr); gap:10px; }
   .stat-card { padding:14px 10px; }
   .stat-card .num { font-size:1.5rem; }
   .admin-tab { padding:8px 12px; font-size:.76rem; }
-
   .ai-hub { padding:16px 14px; }
   .ai-grid { grid-template-columns:repeat(2,1fr); gap:10px; }
   .ai-card { padding:16px 10px; }
   .ai-card .icon { font-size:1.8rem; }
-
   .toast { top:12px; padding:12px 18px; font-size:.8rem; }
   .chat-item { padding:11px 12px; gap:10px; }
   .avatar { width:42px; height:42px; }
   .avatar.sm { width:32px; height:32px; font-size:.8rem; }
   .avatar.lg { width:60px; height:60px; font-size:1.4rem; }
-  .online-dot { left:40px; bottom:11px; }
+  .online-dot, .offline-dot { left:40px; bottom:11px; }
   .story-bar { padding:8px 12px; gap:8px; }
   .select-toolbar { flex-direction:column; gap:6px; padding:8px 12px; }
   .select-toolbar > div { width:100%; display:flex; gap:6px; }
@@ -378,25 +367,14 @@ body::before { content:''; position:fixed; inset:-50%; background: radial-gradie
   .ctx-menu { min-width:180px; max-width:88vw; }
   .ctx-menu div { padding:11px 14px; font-size:.86rem; }
 }
-
 @media (max-width:360px) {
   .nav-tab { min-width:70px; padding:11px 8px; font-size:.72rem; }
   .btn-icon { width:32px; height:32px; font-size:.85rem; }
-  .input-area .btn-icon[onclick*="toggleEmoji"] { display: none; }
+  .input-area .btn-icon[onclick*="toggleGIF"] { display: none; }
   .avatar { width:38px; height:38px; }
   .stat-grid { grid-template-columns:1fr; }
   .ai-grid { grid-template-columns:1fr; }
 }
-
-@media (max-width:768px) and (orientation: landscape) {
-  .auth-card { padding:20px 24px; }
-  .auth-logo { width:50px; height:50px; font-size:1.5rem; margin-bottom:10px; }
-  .auth-card h2 { font-size:1.2rem; margin-bottom:4px; }
-  .auth-sub { margin-bottom:14px; }
-  .auth-card input { padding:10px 14px; margin-bottom:8px; }
-  .video-local { width:80px; height:110px; }
-}
-
 button, .btn, .btn-icon, .chat-item, .ai-card, .nav-tab { touch-action:manipulation; }
 .messages-area, .admin-view, .ai-hub, .sidebar { -webkit-overflow-scrolling:touch; }
 </style>
@@ -405,7 +383,7 @@ button, .btn, .btn-icon, .chat-item, .ai-card, .nav-tab { touch-action:manipulat
 
 <div class="auth-card" id="authCard">
   <div class="auth-logo">🚀</div>
-  <h2 id="authTitle">AZMIR MESSENGER PRO</h2>
+  <h2 id="authTitle">Pro Messenger v14</h2>
   <p class="auth-sub">Sign in to continue</p>
   <div id="authError" style="color:var(--danger); font-size:.8rem; display:none; margin-bottom:10px; padding:8px; background:rgba(239,68,68,.1); border-radius:8px;"></div>
   <input type="text" id="authUser" placeholder="Username" autocomplete="off">
@@ -444,7 +422,8 @@ button, .btn, .btn-icon, .chat-item, .ai-card, .nav-tab { touch-action:manipulat
       </div>
 
       <div class="search-box">
-        <input type="text" id="searchInput" placeholder="🔍 Search users..." oninput="renderUsers()">
+        <input type="text" id="searchInput" placeholder="🔍 Search or type username..." oninput="renderUsers()">
+        <button class="add-btn" onclick="addUserByUsername()" title="Add user">➕</button>
       </div>
 
       <div class="story-bar" id="storyBar"></div>
@@ -462,7 +441,7 @@ button, .btn, .btn-icon, .chat-item, .ai-card, .nav-tab { touch-action:manipulat
           </div>
         </div>
         <div style="display:flex; gap:6px;">
-          <button class="btn-icon" id="selectToggleBtn" onclick="toggleSelectMode()" title="Select messages">☑️</button>
+          <button class="btn-icon" id="selectToggleBtn" onclick="toggleSelectMode()" title="Select">☑️</button>
           <button class="btn-icon" onclick="if(selectedUser && selectedUser !== BOT_NAME) viewProfile(selectedUser)">👤</button>
           <button class="btn-icon" onclick="startCall('voice')" style="background:var(--primary); color:white;" title="Voice Call">📞</button>
           <button class="btn-icon" onclick="startCall('video')" style="background:var(--success); color:white;" title="Video Call">📹</button>
@@ -473,9 +452,9 @@ button, .btn, .btn-icon, .chat-item, .ai-card, .nav-tab { touch-action:manipulat
       <div class="select-toolbar" id="selectToolbar">
         <span class="count" id="selectCount">0 selected</span>
         <div style="display:flex; gap:6px;">
-          <button class="btn btn-sm" style="background:rgba(255,255,255,.2);" onclick="selectAllMessages()">Select All</button>
+          <button class="btn btn-sm" style="background:rgba(255,255,255,.2);" onclick="selectAllMessages()">All</button>
           <button class="btn btn-sm" style="background:var(--danger);" onclick="deleteSelectedMessages()">🗑️ Delete</button>
-          <button class="btn btn-sm" style="background:rgba(255,255,255,.2);" onclick="toggleSelectMode()">✕ Cancel</button>
+          <button class="btn btn-sm" style="background:rgba(255,255,255,.2);" onclick="toggleSelectMode()">✕</button>
         </div>
       </div>
 
@@ -711,13 +690,26 @@ button, .btn, .btn-icon, .chat-item, .ai-card, .nav-tab { touch-action:manipulat
   </div>
 </div>
 
+<div class="modal-overlay" id="addUserModal">
+  <div class="modal-content">
+    <h3>➕ Add User</h3>
+    <p style="font-size:.82rem; color:var(--text2); margin-bottom:12px;">Enter the exact username of the person you want to add. They must be using this app.</p>
+    <input type="text" id="addUserNameInput" placeholder="Username" style="width:100%; padding:12px; background:var(--bg4); border:1px solid var(--border); color:var(--text); border-radius:12px; outline:none; font-size:16px; margin-bottom:12px;">
+    <button class="btn" style="width:100%;" onclick="confirmAddUser()">Add User</button>
+    <button class="btn" style="width:100%; margin-top:8px; background:var(--bg4);" onclick="document.getElementById('addUserModal').classList.remove('show')">Cancel</button>
+  </div>
+</div>
+
 <div class="ctx-menu" id="ctxMenu"></div>
 <div class="toast" id="toast"></div>
 
 <script>
-// ============ AI CONFIG ============
+// ============================================================
+// ============ AI CONFIG (GEMINI) ===========================
+// ============================================================
 const AI_CONFIG = {
-  apiKey: 'AQ.Ab8RN6K6mFJalNHwn5bziaXGh16KwlwkdsHWcS60qA7ml0LMQA', // ⚠️ replace with fresh key
+  // ⚠️ NEW KEY নাও: https://aistudio.google.com/app/apikey
+  apiKey: 'AQ.Ab8RN6K6mFJalNHwn5bziaXGh16KwlwkdsHWcS60qA7ml0LMQA',
   models: ['gemini-flash-latest', 'gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash-latest']
 };
 
@@ -751,7 +743,7 @@ async function callGemini(prompt, systemPrompt = 'You are ProBot, a friendly AI 
         }
         if (errMsg.includes('not found') || errMsg.includes('no longer available') || res.status === 404) break;
         if (res.status === 429) { await sleep(2500); continue; }
-        if (res.status === 400 && errMsg.includes('api key')) return '❌ Invalid API key.';
+        if (res.status === 400 && errMsg.includes('api key')) return '❌ Invalid API key. Notun key nao: https://aistudio.google.com/app/apikey';
         break;
       } catch (e) {
         lastError = e.message;
@@ -760,11 +752,11 @@ async function callGemini(prompt, systemPrompt = 'You are ProBot, a friendly AI 
       }
     }
   }
-  return '⏳ AI busy. Try again.\n\n_(' + lastError + ')_';
+  return '⏳ AI busy. Try again in a moment.\n\n_(' + lastError + ')_';
 }
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-// ============ SOUND SYSTEM ============
+// ============ SOUND ============
 let audioCtx = null;
 function getAudioCtx() {
   if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -819,20 +811,14 @@ function requestNotificationPermission() {
 function showNotification(title, body, icon) {
   if (!('Notification' in window) || Notification.permission !== 'granted') return;
   try {
-    const notif = new Notification(title, {
-      body: body.substring(0, 200),
-      icon: icon || '🚀',
-      tag: 'pm-' + Date.now(),
-      silent: true,
-      badge: '🚀'
-    });
+    const notif = new Notification(title, { body: body.substring(0, 200), icon: icon || '🚀', tag: 'pm-' + Date.now(), silent: true });
     notif.onclick = () => { window.focus(); notif.close(); };
   } catch(e) {}
 }
 function updateTabBadge() {
   let total = 0;
   Object.values(unread).forEach(n => total += n);
-  document.title = total > 0 ? '(' + total + ') AZMIR MESSENGER PRO' : 'AZMIR MESSENGER PRO';
+  document.title = total > 0 ? '(' + total + ') Pro Messenger v14' : 'Pro Messenger v14';
 }
 
 // ============ STATE ============
@@ -847,6 +833,7 @@ let messages = {};
 let unread = {};
 let markedUnread = {};
 let peer = null;
+let myPeerId = null;
 let dataConnections = {};
 let currentBubble = 'blue';
 let customEmojis = [];
@@ -884,10 +871,23 @@ let renderedMsgCount = 0;
 
 let typingSoundThrottle = 0;
 
+// ============ PEER ID DERIVATION ============
+// PeerJS peer ID deterministic — username theke banano
+// FIX: User khuje pabe, karon peer ID guess kora jay
+function getPeerIdForUser(username) {
+  // Simple hash of username for uniqueness
+  let hash = 0;
+  const u = username.toLowerCase().trim();
+  for (let i = 0; i < u.length; i++) {
+    hash = ((hash << 5) - hash) + u.charCodeAt(i);
+    hash = hash & hash;
+  }
+  return 'pm14-' + Math.abs(hash).toString(36) + '-' + u.replace(/[^a-z0-9]/g, '').substring(0, 10);
+}
+
 // ============ INIT ============
 function init() {
   loadFromStorage();
-  setupPeer();
   setupKeyboardShortcuts();
   renderAIHub();
   updateSoundToggle();
@@ -957,7 +957,7 @@ function toggleAuthMode() {
     title.textContent = 'Create Account'; btn.textContent = 'Sign Up';
     toggle.textContent = 'Already have an account? Log in';
   } else {
-    title.textContent = 'AZMIR MESSENGER PRO'; btn.textContent = 'Log In';
+    title.textContent = 'Pro Messenger v14'; btn.textContent = 'Log In';
     toggle.textContent = 'Need an account? Sign up here';
   }
   document.getElementById('authError').style.display = 'none';
@@ -982,7 +982,8 @@ function handleAuth() {
     users[ADMIN_USER] = {
       username: ADMIN_USER, password: simpleHash(password), avatar: 'A',
       bio: '👑 System Administrator', online: true, isAdmin: true,
-      created: users[ADMIN_USER]?.created || Date.now()
+      created: users[ADMIN_USER]?.created || Date.now(),
+      peerId: getPeerIdForUser(ADMIN_USER)
     };
     currentUser = { username: ADMIN_USER, avatar: 'A' };
     friends[ADMIN_USER] = friends[ADMIN_USER] || [];
@@ -999,16 +1000,18 @@ function handleAuth() {
       username, password: simpleHash(password),
       avatar: username.charAt(0).toUpperCase(),
       bio: 'Hey there! I am using Pro Messenger.',
-      online: true, created: Date.now()
+      online: true, created: Date.now(),
+      peerId: getPeerIdForUser(username)
     };
     friends[username] = friends[username] || [];
     friendRequests[username] = friendRequests[username] || [];
     currentUser = { username, avatar: username.charAt(0).toUpperCase() };
     logActivity('New user: ' + username);
   } else {
-    if (!users[username] || users[username].isBot) return showAuthError('User not found');
+    if (!users[username] || users[username].isBot) return showAuthError('User not found — sign up first');
     if (users[username].password !== simpleHash(password)) return showAuthError('Incorrect password');
     currentUser = { username, avatar: users[username].avatar || username.charAt(0).toUpperCase() };
+    users[username].peerId = getPeerIdForUser(username);
     logActivity('Login: ' + username);
   }
 
@@ -1036,9 +1039,11 @@ function logout() {
   if (!confirm('Log out?')) return;
   if (currentUser) {
     users[currentUser.username].online = false;
+    users[currentUser.username].lastSeen = Date.now();
     onlineUsers.delete(currentUser.username);
     logActivity('Logout: ' + currentUser.username);
   }
+  if (peer) { try { peer.destroy(); } catch(e) {} }
   currentUser = null; selectedUser = null;
   saveToStorage(); location.reload();
 }
@@ -1052,6 +1057,7 @@ function showApp() {
   document.getElementById('myAvatar').innerHTML = av.startsWith('data:') ? '<img src="' + av + '">' : av;
   const isAdmin = currentUser.username === ADMIN_USER;
   document.getElementById('adminTabBtn').style.display = isAdmin ? 'block' : 'none';
+  setupPeer();
   renderUsers(); renderStoryBar(); updateRequestBadge(); updateTabBadge();
   loadMessages(BOT_NAME);
   if (!messages[BOT_NAME]) messages[BOT_NAME] = [];
@@ -1062,20 +1068,41 @@ function showApp() {
 // ============ PEER ============
 function setupPeer() {
   if (typeof Peer === 'undefined') return;
+  if (peer) { try { peer.destroy(); } catch(e) {} }
   try {
-    const peerId = 'pm-v12-' + (currentUser?.username || 'anon') + '-' + Math.floor(Math.random() * 10000);
-    peer = new Peer(peerId, { debug: 0 });
-    peer.on('open', () => broadcastPresence());
+    myPeerId = getPeerIdForUser(currentUser.username);
+    peer = new Peer(myPeerId, { debug: 0 });
+
+    peer.on('open', (id) => {
+      console.log('✓ Peer connected:', id);
+      users[currentUser.username].peerId = id;
+      saveToStorage();
+      showToast('✓ Connected as ' + currentUser.username);
+    });
+
     peer.on('connection', (conn) => {
       conn.on('open', () => {
         dataConnections[conn.peer] = conn;
+        // Find username from peerId
+        const username = findUsernameByPeerId(conn.peer);
+        if (username && username !== currentUser.username) {
+          onlineUsers.add(username);
+          if (users[username]) users[username].online = true;
+          renderUsers();
+        }
         conn.on('data', handleDataMessage);
-        conn.on('close', () => delete dataConnections[conn.peer]);
+        conn.on('close', () => {
+          delete dataConnections[conn.peer];
+          const u = findUsernameByPeerId(conn.peer);
+          if (u) { onlineUsers.delete(u); renderUsers(); }
+        });
       });
     });
+
     peer.on('call', (call) => {
       const type = call.metadata?.type || 'video';
-      if (confirm((type === 'voice' ? '📞 Voice' : '📹 Video') + ' call. Accept?')) {
+      const callerName = findUsernameByPeerId(call.peer) || 'Unknown';
+      if (confirm((type === 'voice' ? '📞 Voice' : '📹 Video') + ' call from ' + callerName + '. Accept?')) {
         const constraints = type === 'voice' ? { audio: true } : { video: true, audio: true };
         navigator.mediaDevices.getUserMedia(constraints).then(stream => {
           localStream = stream;
@@ -1093,27 +1120,82 @@ function setupPeer() {
         }).catch(() => call.close());
       } else call.close();
     });
-    peer.on('error', (err) => console.warn('Peer error', err));
+
+    peer.on('error', (err) => {
+      console.warn('Peer error', err);
+      if (err.type === 'unavailable-id') {
+        showToast('⚠️ User ID taken — try different username');
+      }
+    });
   } catch(e) { console.warn('Peer setup failed', e); }
 }
 
-function broadcastPresence() {
-  if (!currentUser) return;
-  const data = { type: 'presence', user: currentUser.username, online: true, ts: Date.now() };
-  Object.values(dataConnections).forEach(conn => { try { conn.send(data); } catch(e) {} });
+// Find username from peerId — reverse lookup
+function findUsernameByPeerId(peerId) {
+  if (!peerId) return null;
+  // Check local users first
+  for (const [username, data] of Object.entries(users)) {
+    if (data.peerId === peerId) return username;
+  }
+  // Fallback: check if peerId contains username fragment
+  if (peerId.startsWith('pm14-')) {
+    const parts = peerId.split('-');
+    if (parts.length >= 3) {
+      const fragment = parts[2];
+      for (const username of Object.keys(users)) {
+        if (username.toLowerCase().replace(/[^a-z0-9]/g, '').startsWith(fragment)) {
+          return username;
+        }
+      }
+    }
+  }
+  return null;
+}
+
+function tryConnectToUser(username) {
+  if (!peer || !myPeerId) return false;
+  if (username === currentUser.username) return false;
+  if (dataConnections[getPeerIdForUser(username)]) return true;
+
+  const targetPeerId = getPeerIdForUser(username);
+  if (dataConnections[targetPeerId]?.open) return true;
+
+  try {
+    const conn = peer.connect(targetPeerId, { reliable: true });
+    conn.on('open', () => {
+      dataConnections[targetPeerId] = conn;
+      onlineUsers.add(username);
+      if (users[username]) users[username].online = true;
+      conn.on('data', handleDataMessage);
+      conn.on('close', () => {
+        delete dataConnections[targetPeerId];
+        onlineUsers.delete(username);
+        renderUsers();
+      });
+      renderUsers();
+      showToast('✓ Connected to ' + username);
+    });
+    conn.on('error', () => {});
+    return true;
+  } catch(e) {
+    return false;
+  }
 }
 
 function handleDataMessage(data) {
   if (!data || !data.type) return;
   switch(data.type) {
     case 'presence':
-      if (data.user !== currentUser.username) {
-        if (data.online) onlineUsers.add(data.user); else onlineUsers.delete(data.user);
+      if (data.user && data.user !== currentUser.username) {
+        if (data.online) { onlineUsers.add(data.user); if (users[data.user]) users[data.user].online = true; }
+        else { onlineUsers.delete(data.user); if (users[data.user]) users[data.user].online = false; }
+        if (data.userInfo && !users[data.user]) users[data.user] = data.userInfo;
         renderUsers();
       }
       break;
     case 'message':
       if (data.to === currentUser.username) {
+        if (!users[data.from]) users[data.from] = { username: data.from, avatar: data.from.charAt(0).toUpperCase(), bio: 'Hey there!' };
         if (!messages[data.from]) messages[data.from] = [];
         messages[data.from].push(data);
         if (selectedUser === data.from) appendMessage(data.from, data, false);
@@ -1123,7 +1205,7 @@ function handleDataMessage(data) {
         }
         saveToStorage(); renderUsers(); updateTabBadge();
         playSound('receive');
-        const previewBody = data.text || (data.image ? '📷 Photo' : data.gif ? '🎞️ GIF' : data.voice ? '🎤 Voice message' : '📎 Media');
+        const previewBody = data.text || (data.image ? '📷 Photo' : data.gif ? '🎞️ GIF' : data.voice ? '🎤 Voice' : '📎 Media');
         if (document.hidden || selectedUser !== data.from) {
           showNotification('💬 ' + data.from, previewBody, users[data.from]?.avatar);
         }
@@ -1137,6 +1219,7 @@ function handleDataMessage(data) {
         friendRequests[currentUser.username] = friendRequests[currentUser.username] || [];
         if (!friendRequests[currentUser.username].includes(data.from)) {
           friendRequests[currentUser.username].push(data.from);
+          if (!users[data.from]) users[data.from] = { username: data.from, avatar: data.from.charAt(0).toUpperCase(), bio: 'Hey there!' };
           updateRequestBadge(); saveToStorage();
           showToast('👥 Friend request from ' + data.from);
         }
@@ -1153,8 +1236,83 @@ function handleDataMessage(data) {
 }
 
 function sendData(to, data) {
-  const conn = dataConnections[to] || Object.values(dataConnections).find(c => c.peer.includes(to));
-  if (conn && conn.open) { try { conn.send(data); } catch(e) {} }
+  const targetPeerId = getPeerIdForUser(to);
+  let conn = dataConnections[targetPeerId] || Object.values(dataConnections).find(c => c.peer === targetPeerId);
+  if (conn && conn.open) {
+    try { conn.send(data); return true; } catch(e) {}
+  }
+  // Try to connect if not connected
+  if (!conn && users[to]) {
+    try {
+      const newConn = peer.connect(targetPeerId, { reliable: true });
+      newConn.on('open', () => {
+        dataConnections[targetPeerId] = newConn;
+        newConn.on('data', handleDataMessage);
+        newConn.on('close', () => { delete dataConnections[targetPeerId]; });
+        try { newConn.send(data); } catch(e) {}
+      });
+    } catch(e) {}
+  }
+  return false;
+}
+
+function broadcastPresence() {
+  if (!currentUser) return;
+  const data = {
+    type: 'presence', user: currentUser.username, online: true, ts: Date.now(),
+    userInfo: { username: currentUser.username, avatar: users[currentUser.username]?.avatar, bio: users[currentUser.username]?.bio, peerId: myPeerId }
+  };
+  Object.values(dataConnections).forEach(conn => { try { conn.send(data); } catch(e) {} });
+}
+
+// ============ ADD USER BY USERNAME (NEW FIX) ============
+function addUserByUsername() {
+  const input = document.getElementById('addUserNameInput');
+  if (input) input.value = '';
+  document.getElementById('addUserModal').classList.add('show');
+  setTimeout(() => input?.focus(), 100);
+}
+
+function confirmAddUser() {
+  const input = document.getElementById('addUserNameInput');
+  const username = input.value.trim();
+  if (!username) return showToast('⚠️ Enter a username');
+  if (username === currentUser.username) return showToast('⚠️ That\'s you!');
+  if (users[username] && users[username].isBot) return showToast('⚠️ Cannot add bot');
+
+  // Register user locally so we can message them
+  if (!users[username]) {
+    users[username] = {
+      username: username,
+      avatar: username.charAt(0).toUpperCase(),
+      bio: 'Added by ' + currentUser.username,
+      online: false,
+      peerId: getPeerIdForUser(username)
+    };
+  }
+  // Add as friend
+  friends[currentUser.username] = friends[currentUser.username] || [];
+  if (!friends[currentUser.username].includes(username)) friends[currentUser.username].push(username);
+  friendRequests[username] = friendRequests[username] || [];
+  if (!friendRequests[username].includes(currentUser.username)) friendRequests[username].push(currentUser.username);
+
+  saveToStorage();
+  document.getElementById('addUserModal').classList.remove('show');
+  showToast('✓ Added ' + username);
+  renderUsers();
+
+  // Try to connect
+  tryConnectToUser(username);
+
+  // Send friend request
+  setTimeout(() => {
+    sendData(username, {
+      type: 'friend_request',
+      from: currentUser.username,
+      to: username,
+      userInfo: { username: currentUser.username, avatar: users[currentUser.username]?.avatar, peerId: myPeerId }
+    });
+  }, 500);
 }
 
 // ============ USERS ============
@@ -1164,12 +1322,14 @@ function renderUsers() {
   const search = document.getElementById('searchInput')?.value.toLowerCase() || '';
   const myFriends = friends[currentUser.username] || [];
   let html = renderUserItem(BOT_NAME, true, search);
-  myFriends.forEach(f => { if (f !== currentUser.username) html += renderUserItem(f, onlineUsers.has(f), search); });
+  myFriends.forEach(f => {
+    if (f !== currentUser.username && users[f]) html += renderUserItem(f, onlineUsers.has(f), search);
+  });
   Object.keys(users).forEach(u => {
     if (u === currentUser.username || u === BOT_NAME || myFriends.includes(u)) return;
     html += renderUserItem(u, onlineUsers.has(u), search);
   });
-  if (!html) html = '<div style="padding:24px; text-align:center; color:var(--text3); font-size:.85rem;">No users found</div>';
+  if (!html) html = '<div style="padding:24px; text-align:center; color:var(--text3); font-size:.85rem;">No users yet.<br><br>Tap ➕ above to add someone!</div>';
   list.innerHTML = html;
   list.querySelectorAll('.chat-item').forEach(el => {
     el.addEventListener('contextmenu', (e) => {
@@ -1180,7 +1340,6 @@ function renderUsers() {
     let pressTimer;
     el.addEventListener('touchstart', (e) => {
       pressTimer = setTimeout(() => {
-        e.preventDefault();
         const username = el.dataset.username;
         if (username) showChatItemMenu(e.touches[0].clientX, e.touches[0].clientY, username);
       }, 600);
@@ -1208,7 +1367,7 @@ function renderUserItem(username, isOnline, search) {
 
   return `<div class="chat-item ${isActive ? 'active' : ''} ${markedClass}" data-username="${username.replace(/"/g, '&quot;')}" onclick="selectChat('${username.replace(/'/g, "\\'")}')">
     <div class="avatar">${av}</div>
-    ${isOnline ? '<div class="online-dot"></div>' : ''}
+    ${isOnline ? '<div class="online-dot"></div>' : '<div class="offline-dot"></div>'}
     <div class="chat-item-info">
       <h4>${escapeHtml(username)} ${username === BOT_NAME ? '🤖' : ''} ${verifyTag} ${friendTag} ${adminTag}</h4>
       <small>${escapeHtml(preview.substring(0, 40))}</small>
@@ -1225,10 +1384,11 @@ function showChatItemMenu(x, y, username) {
   let html = '';
   html += '<div onclick="toggleMarkUnread(\'' + username.replace(/'/g, "\\'") + '\')">' + (isMarked ? '📖 Mark as Read' : '📬 Mark as Unread') + '</div>';
   html += '<div onclick="selectChat(\'' + username.replace(/'/g, "\\'") + '\')">💬 Open Chat</div>';
+  html += '<div onclick="tryConnectToUser(\'' + username.replace(/'/g, "\\'") + '\'); document.getElementById(\'ctxMenu\').classList.remove(\'show\')">🔌 Reconnect</div>';
   html += '<div onclick="clearChatFor(\'' + username.replace(/'/g, "\\'") + '\')">🗑️ Clear Chat</div>';
   menu.innerHTML = html;
   menu.style.left = Math.min(x, window.innerWidth - 210) + 'px';
-  menu.style.top = Math.min(y, window.innerHeight - 200) + 'px';
+  menu.style.top = Math.min(y, window.innerHeight - 220) + 'px';
   menu.classList.add('show');
   setTimeout(() => {
     const closeMenu = (e) => { if (!menu.contains(e.target)) { menu.classList.remove('show'); document.removeEventListener('click', closeMenu); } };
@@ -1237,14 +1397,8 @@ function showChatItemMenu(x, y, username) {
 }
 
 function toggleMarkUnread(username) {
-  if (markedUnread[username]) {
-    delete markedUnread[username];
-    showToast('📖 Marked as read');
-  } else {
-    markedUnread[username] = true;
-    if (unread[username] === 0) unread[username] = 1;
-    showToast('📬 Marked as unread');
-  }
+  if (markedUnread[username]) { delete markedUnread[username]; showToast('📖 Read'); }
+  else { markedUnread[username] = true; if (unread[username] === 0) unread[username] = 1; showToast('📬 Unread'); }
   saveToStorage(); renderUsers(); updateTabBadge();
   document.getElementById('ctxMenu').classList.remove('show');
 }
@@ -1266,12 +1420,14 @@ function selectChat(username) {
   renderUsers(); updateChatHeader(username); loadMessages(username);
   updateTabBadge();
   document.getElementById('chatWindow').classList.add('mobile-active');
+  // Try to connect
+  if (username !== BOT_NAME) tryConnectToUser(username);
 }
 
 function updateChatHeader(username) {
   document.getElementById('activeChatUser').textContent = username;
   const user = users[username] || {};
-  document.getElementById('activeUserStatus').textContent = (onlineUsers.has(username) || username === BOT_NAME) ? '● Online' : 'Offline';
+  document.getElementById('activeUserStatus').textContent = (onlineUsers.has(username) || username === BOT_NAME) ? '● Online' : 'Last seen ' + (user.lastSeen ? formatTime(user.lastSeen) : 'unknown');
   const av = user.avatar && user.avatar.startsWith('data:') ? '<img src="' + user.avatar + '">' : (user.avatar || username.charAt(0).toUpperCase());
   document.getElementById('activeAvatar').innerHTML = av;
 }
@@ -1338,30 +1494,19 @@ function buildMessageElement(username, msg, isSent) {
   if (msg.reactions && Object.keys(msg.reactions).length) {
     const r = document.createElement('div');
     r.className = 'reaction-display'; r.style.bottom = '0';
-    const reactions = Object.values(msg.reactions).map(e => '<span>' + e + '</span>').join('');
-    r.innerHTML = reactions;
+    r.innerHTML = Object.values(msg.reactions).map(e => '<span>' + e + '</span>').join('');
     wrap.appendChild(r);
   }
-  wrap.addEventListener('contextmenu', (e) => {
-    e.preventDefault();
-    if (!selectMode) showContextMenu(e.clientX, e.clientY, username, msg);
-  });
+  wrap.addEventListener('contextmenu', (e) => { e.preventDefault(); if (!selectMode) showContextMenu(e.clientX, e.clientY, username, msg); });
   wrap.addEventListener('click', (e) => {
-    if (selectMode) {
-      e.stopPropagation();
-      toggleMessageSelection(msg.id, wrap);
-      return;
-    }
+    if (selectMode) { e.stopPropagation(); toggleMessageSelection(msg.id, wrap); return; }
     if (['IMG','AUDIO','VIDEO'].includes(e.target.tagName)) return;
     showContextMenu(e.clientX, e.clientY, username, msg);
   });
   let pressTimer;
   wrap.addEventListener('touchstart', () => {
     pressTimer = setTimeout(() => {
-      if (!selectMode) {
-        toggleSelectMode();
-        toggleMessageSelection(msg.id, wrap);
-      }
+      if (!selectMode) { toggleSelectMode(); toggleMessageSelection(msg.id, wrap); }
     }, 500);
   }, { passive: true });
   wrap.addEventListener('touchend', () => clearTimeout(pressTimer));
@@ -1411,6 +1556,27 @@ function sendImage(input) {
   input.value = '';
 }
 
+// ============ EMOJI AUTO-SEND (FIX) ============
+function insertEmoji(emoji) {
+  if (!selectedUser) return showToast('⚠️ Select a chat first');
+
+  // Emoji picker bondho
+  document.getElementById('emojiPicker').classList.remove('show');
+
+  // Custom emoji handle
+  if (emoji.startsWith('[custom:')) {
+    const idx = parseInt(emoji.match(/\[custom:(\d+)\]/)[1]);
+    if (customEmojis[idx]) {
+      sendMessage({ image: customEmojis[idx] });
+    }
+  } else {
+    // Regular emoji — direct send
+    sendMessage({ text: emoji });
+  }
+
+  playSound('send');
+}
+
 // ============ SELECT MODE ============
 function toggleSelectMode() {
   selectMode = !selectMode;
@@ -1419,30 +1585,20 @@ function toggleSelectMode() {
   const toolbar = document.getElementById('selectToolbar');
   const btn = document.getElementById('selectToggleBtn');
   if (selectMode) {
-    area.classList.add('select-mode');
-    toolbar.classList.add('show');
-    btn.style.background = 'var(--danger)';
-    btn.textContent = '✕';
-    showToast('☑️ Tap messages to select');
+    area.classList.add('select-mode'); toolbar.classList.add('show');
+    btn.style.background = 'var(--danger)'; btn.textContent = '✕';
+    showToast('☑️ Tap messages');
   } else {
-    area.classList.remove('select-mode');
-    toolbar.classList.remove('show');
-    btn.style.background = '';
-    btn.textContent = '☑️';
+    area.classList.remove('select-mode'); toolbar.classList.remove('show');
+    btn.style.background = ''; btn.textContent = '☑️';
     area.querySelectorAll('.message-wrap.selected').forEach(w => w.classList.remove('selected'));
   }
   updateSelectCount();
 }
 
 function toggleMessageSelection(msgId, wrap) {
-  if (selectedMsgIds.has(msgId)) {
-    selectedMsgIds.delete(msgId);
-    wrap.classList.remove('selected');
-  } else {
-    selectedMsgIds.add(msgId);
-    wrap.classList.add('selected');
-    playSound('select');
-  }
+  if (selectedMsgIds.has(msgId)) { selectedMsgIds.delete(msgId); wrap.classList.remove('selected'); }
+  else { selectedMsgIds.add(msgId); wrap.classList.add('selected'); playSound('select'); }
   updateSelectCount();
 }
 
@@ -1484,7 +1640,6 @@ async function startRecording(e) {
     audioChunks = [];
     isRecording = true;
     recordingStartTime = Date.now();
-
     mediaRecorder.ondataavailable = (ev) => audioChunks.push(ev.data);
     mediaRecorder.onstop = async () => {
       stream.getTracks().forEach(t => t.stop());
@@ -1494,19 +1649,13 @@ async function startRecording(e) {
       const blob = new Blob(audioChunks, { type: 'audio/webm' });
       if (blob.size < 800) { showToast('⚠️ Too short'); return; }
       const reader = new FileReader();
-      reader.onload = (ev) => {
-        sendMessage({ voice: ev.target.result, duration: Math.floor((Date.now() - recordingStartTime) / 1000) });
-      };
+      reader.onload = (ev) => { sendMessage({ voice: ev.target.result, duration: Math.floor((Date.now() - recordingStartTime) / 1000) }); };
       reader.readAsDataURL(blob);
     };
-
     mediaRecorder.start();
     document.getElementById('voiceBtn').classList.add('recording');
     document.getElementById('voiceRecBar').classList.add('show');
-  } catch(e) {
-    showToast('🎤 Mic access denied');
-    isRecording = false;
-  }
+  } catch(e) { showToast('🎤 Mic access denied'); isRecording = false; }
 }
 
 function stopRecording(e) {
@@ -1540,8 +1689,8 @@ function addBotGreeting() {
   messages[BOT_NAME] = [];
   const greetings = [
     '🤖 Hello! I am ProBot. I remember our conversation!',
-    '👋 Welcome to AZMIR MESSENGER PRO!',
-    '✨ New: mark unread, bulk delete, animated emojis, typing sound!'
+    '👋 Welcome to Pro Messenger v14!',
+    '✨ New: tap any emoji to send instantly!'
   ];
   greetings.forEach((t, i) => {
     setTimeout(() => {
@@ -1561,11 +1710,7 @@ async function botReply(userText) {
     status.style.color = 'var(--primary2)';
   }
   const history = getAIMemory(BOT_NAME).filter(h => h.role !== 'system');
-  const reply = await callGemini(
-    userText,
-    'You are ProBot, friendly AI assistant. Keep replies short & warm. Use emojis occasionally. Reply in same language as user.',
-    history
-  );
+  const reply = await callGemini(userText, 'You are ProBot, friendly AI assistant. Keep replies short & warm. Use emojis occasionally. Reply in same language as user.', history);
   addToAIMemory(BOT_NAME, 'user', userText);
   addToAIMemory(BOT_NAME, 'bot', reply);
   const msg = { id: Date.now(), from: BOT_NAME, to: currentUser.username, text: reply, ts: Date.now() };
@@ -1574,16 +1719,13 @@ async function botReply(userText) {
   if (selectedUser === BOT_NAME) appendMessage(BOT_NAME, msg, false);
   saveToStorage();
   playSound('receive');
-  if (document.hidden || selectedUser !== BOT_NAME) {
-    showNotification('🤖 ' + BOT_NAME, reply);
-  }
+  if (document.hidden || selectedUser !== BOT_NAME) showNotification('🤖 ' + BOT_NAME, reply);
   if (selectedUser === BOT_NAME && status) { status.textContent = '● Online'; status.style.color = ''; }
 }
 
 function clearAIMemory() {
   if (!confirm('Clear AI memory?')) return;
-  aiMemory = {};
-  saveToStorage();
+  aiMemory = {}; saveToStorage();
   showToast('🧠 Cleared');
 }
 
@@ -1656,11 +1798,7 @@ function editMessage(msgId, username) {
 function deleteMessage(msgId, username) {
   const msgs = messages[username] || [];
   const idx = msgs.findIndex(m => m.id == msgId);
-  if (idx >= 0) {
-    msgs.splice(idx, 1); saveToStorage();
-    if (selectedUser === username) loadMessages(username);
-    renderUsers();
-  }
+  if (idx >= 0) { msgs.splice(idx, 1); saveToStorage(); if (selectedUser === username) loadMessages(username); renderUsers(); }
   document.getElementById('ctxMenu').classList.remove('show');
 }
 
@@ -1753,13 +1891,6 @@ function renderEmojiGrid(tab) {
   }
 }
 
-function insertEmoji(emoji) {
-  const input = document.getElementById('msgInput');
-  input.value += emoji.startsWith('[custom:') ? ' ' : emoji;
-  input.focus();
-  playSound('typing');
-}
-
 // ============ GIFS ============
 function debouncedSearchGIFs() {
   clearTimeout(gifSearchTimer);
@@ -1808,7 +1939,7 @@ function toggleSound() {
   soundEnabled = !soundEnabled;
   saveToStorage(); updateSoundToggle();
   if (soundEnabled) playSound('send');
-  showToast(soundEnabled ? '🔊 Sound ON' : '🔇 Sound OFF');
+  showToast(soundEnabled ? '🔊 ON' : '🔇 OFF');
 }
 
 function updateSoundToggle() {
@@ -1822,7 +1953,7 @@ function toggleTypingSound() {
   typingSoundEnabled = !typingSoundEnabled;
   saveToStorage(); updateTypingSoundToggle();
   if (typingSoundEnabled) playSound('typing');
-  showToast(typingSoundEnabled ? '⌨️ Typing ON' : '🔇 Typing OFF');
+  showToast(typingSoundEnabled ? '⌨️ ON' : '🔇 OFF');
 }
 
 function updateTypingSoundToggle() {
@@ -1844,7 +1975,7 @@ function setBubble(bubble) {
   document.body.setAttribute('data-bubble', bubble);
   saveToStorage();
   document.getElementById('bubbleModal').classList.remove('show');
-  showToast('💬 Bubble updated');
+  showToast('💬 Updated');
 }
 
 function openCustomEmojiManager() {
@@ -1864,11 +1995,7 @@ function renderCustomEmojiManager() {
 function addCustomEmoji(input) {
   if (!input.files?.[0]) return;
   const reader = new FileReader();
-  reader.onload = (e) => {
-    customEmojis.push(e.target.result);
-    saveToStorage(); renderCustomEmojiManager();
-    showToast('⭐ Added');
-  };
+  reader.onload = (e) => { customEmojis.push(e.target.result); saveToStorage(); renderCustomEmojiManager(); showToast('⭐ Added'); };
   reader.readAsDataURL(input.files[0]);
   input.value = '';
 }
@@ -1879,16 +2006,12 @@ function removeCustomEmoji(idx) {
 }
 
 function exportData() {
-  const data = {
-    user: currentUser, users, messages, stories, friends, aiMemory,
-    exported: new Date().toISOString()
-  };
+  const data = { user: currentUser, users, messages, stories, friends, aiMemory, exported: new Date().toISOString() };
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url; a.download = 'pro-messenger-backup-' + Date.now() + '.json';
-  a.click();
-  URL.revokeObjectURL(url);
+  a.click(); URL.revokeObjectURL(url);
   showToast('💾 Exported');
 }
 
@@ -1902,6 +2025,7 @@ function viewMyProfile() {
       <div class="avatar lg" style="margin:0 auto 10px;">${av}</div>
       <h3 style="color:var(--primary2);">${escapeHtml(currentUser.username)} ${user.isAdmin ? '👑' : ''} ${verifiedUsers.has(currentUser.username) ? '<span class="verify-tag">✓</span>' : ''}</h3>
       <div class="bio-status">● Online</div>
+      <div style="font-size:.7rem; color:var(--text3); margin-top:6px;">Peer ID: ${escapeHtml(myPeerId || 'connecting...')}</div>
     </div>
     <div class="bio-text">${escapeHtml(bio)}</div>
     <div style="display:flex; gap:8px;">
@@ -2068,8 +2192,7 @@ function viewStory(id) {
         👁️ ${viewCount} ${Object.keys(reactionCounts).length ? '· ' + Object.entries(reactionCounts).map(([k,v]) => k+v).join(' ') : ''}
       </div>
       <div style="display:flex; gap:6px; margin-top:10px;">
-        <input type="text" id="storyReplyInput" placeholder="Reply..." 
-          style="flex:1; padding:10px; border-radius:20px; border:none; background:rgba(255,255,255,.15); color:#fff; outline:none; font-size:16px;">
+        <input type="text" id="storyReplyInput" placeholder="Reply..." style="flex:1; padding:10px; border-radius:20px; border:none; background:rgba(255,255,255,.15); color:#fff; outline:none; font-size:16px;">
         <button onclick="replyToStory('${found.user}')" style="background:var(--primary); border:none; border-radius:50%; width:40px; height:40px; color:#fff; cursor:pointer;">➤</button>
       </div>
     </div>`;
@@ -2094,12 +2217,7 @@ function replyToStory(owner) {
   const input = document.getElementById('storyReplyInput');
   const text = input.value.trim();
   if (!text) return;
-  const msg = {
-    id: Date.now() + Math.random().toString(36).slice(2),
-    from: currentUser.username, to: owner,
-    text: '📸 Story reply: ' + text,
-    ts: Date.now(), reactions: {}
-  };
+  const msg = { id: Date.now() + Math.random().toString(36).slice(2), from: currentUser.username, to: owner, text: '📸 Story reply: ' + text, ts: Date.now(), reactions: {} };
   if (!messages[owner]) messages[owner] = [];
   messages[owner].push(msg);
   sendData(owner, { type: 'message', ...msg });
@@ -2135,18 +2253,31 @@ async function startCall(type = 'video') {
     startVideoCallTimer();
     playSound('call');
 
-    const conn = dataConnections[selectedUser] || Object.values(dataConnections).find(c => c.peer.includes(selectedUser));
-    if (conn && conn.open && conn.peer) {
-      const call = peer.call(conn.peer, localStream, { metadata: { type } });
-      if (call) {
-        call.on('stream', (remoteStream) => {
-          document.getElementById('remoteVideo').srcObject = remoteStream;
-          document.getElementById('videoCallInfo').textContent = (type === 'voice' ? '📞 Connected' : '📹 Connected');
-        });
-        currentCall = call;
-      }
-    } else showToast('⚠️ User offline');
+    const targetPeerId = getPeerIdForUser(selectedUser);
+    let conn = dataConnections[targetPeerId];
+    if (!conn || !conn.open) {
+      // Try to connect first
+      tryConnectToUser(selectedUser);
+      setTimeout(() => {
+        conn = dataConnections[targetPeerId];
+        if (conn && conn.open) {
+          const call = peer.call(targetPeerId, localStream, { metadata: { type } });
+          if (call) { setupCallStreams(call, type); }
+        } else showToast('⚠️ User not reachable');
+      }, 1500);
+    } else {
+      const call = peer.call(targetPeerId, localStream, { metadata: { type } });
+      if (call) setupCallStreams(call, type);
+    }
   } catch(e) { showToast('📷 Access denied'); }
+}
+
+function setupCallStreams(call, type) {
+  call.on('stream', (remoteStream) => {
+    document.getElementById('remoteVideo').srcObject = remoteStream;
+    document.getElementById('videoCallInfo').textContent = (type === 'voice' ? '📞 Connected' : '📹 Connected');
+  });
+  currentCall = call;
 }
 
 function startVideoCallTimer() {
@@ -2337,21 +2468,18 @@ function renderAdminUsers() {
   list.innerHTML = userList.map(u => {
     const isBanned = bannedUsers.has(u);
     const isVerified = verifiedUsers.has(u);
-    return `
-    <div class="admin-card">
-      <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-        <div class="avatar sm">${(users[u].avatar || u.charAt(0)).toString().substring(0,2).toUpperCase()}</div>
-        <div style="flex:1; min-width:100px;">
-          <h4 style="font-size:.85rem;">${escapeHtml(u)} ${users[u].isAdmin ? '👑' : ''} ${isVerified ? '<span class="verify-tag">✓</span>' : ''} ${isBanned ? '<span style="color:var(--danger); font-size:.7rem;">🚫 BANNED</span>' : ''}</h4>
-          <small style="color:var(--text3); font-size:.7rem;">${onlineUsers.has(u) ? '● Online' : 'Offline'} · ${(messages[u] || []).length} msgs</small>
-        </div>
-        ${u !== ADMIN_USER ? `
-          <button class="btn btn-sm" onclick="toggleVerify('${u}')" style="background:${isVerified ? '#3b82f6' : 'var(--bg4)'};" title="Verify">✓</button>
-          <button class="btn btn-sm" onclick="toggleBan('${u}')" style="background:${isBanned ? 'var(--success)' : 'var(--warn)'};" title="Ban">${isBanned ? '🔓' : '🚫'}</button>
-          <button class="btn btn-sm" onclick="deleteUser('${u}')" style="background:var(--danger);" title="Delete">🗑️</button>
-        ` : ''}
+    return `<div class="admin-card"><div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+      <div class="avatar sm">${(users[u].avatar || u.charAt(0)).toString().substring(0,2).toUpperCase()}</div>
+      <div style="flex:1; min-width:100px;">
+        <h4 style="font-size:.85rem;">${escapeHtml(u)} ${users[u].isAdmin ? '👑' : ''} ${isVerified ? '<span class="verify-tag">✓</span>' : ''} ${isBanned ? '<span style="color:var(--danger); font-size:.7rem;">🚫 BANNED</span>' : ''}</h4>
+        <small style="color:var(--text3); font-size:.7rem;">${onlineUsers.has(u) ? '● Online' : 'Offline'} · ${(messages[u] || []).length} msgs</small>
       </div>
-    </div>`;
+      ${u !== ADMIN_USER ? `
+        <button class="btn btn-sm" onclick="toggleVerify('${u}')" style="background:${isVerified ? '#3b82f6' : 'var(--bg4)'};">✓</button>
+        <button class="btn btn-sm" onclick="toggleBan('${u}')" style="background:${isBanned ? 'var(--success)' : 'var(--warn)'};">${isBanned ? '🔓' : '🚫'}</button>
+        <button class="btn btn-sm" onclick="deleteUser('${u}')" style="background:var(--danger);">🗑️</button>
+      ` : ''}
+    </div></div>`;
   }).join('');
 }
 
@@ -2409,9 +2537,9 @@ function switchTab(tab, event) {
 
 // ============ LANGUAGE ============
 const translations = {
-  en: { appName: 'AZMIR MESSENGER PRO', signInSub: 'Sign in to continue', username: 'Username', password: 'Password', login: 'Log In', needAccount: 'Need an account? Sign up here', chats: '💬 Chats', aiHub: '🤖 AI Hub', stories: '📸 Stories', admin: '📊 Admin', searchUsers: '🔍 Search users...', typeMessage: 'Type a message...', chooseSidebar: 'Choose from sidebar', settings: 'Settings' },
-  bn: { appName: 'প্রো মেসেঞ্জার v12', signInSub: 'চালিয়ে যেতে সাইন ইন করুন', username: 'ইউজারনেম', password: 'পাসওয়ার্ড', login: 'লগ ইন', needAccount: 'অ্যাকাউন্ট নেই? সাইন আপ করুন', chats: '💬 চ্যাট', aiHub: '🤖 এআই হাব', stories: '📸 স্টোরি', admin: '📊 অ্যাডমিন', searchUsers: '🔍 খুঁজুন...', typeMessage: 'বার্তা লিখুন...', chooseSidebar: 'চ্যাট বেছে নিন', settings: 'সেটিংস' },
-  hi: { appName: 'प्रो मैसेंजर v12', signInSub: 'जारी रखने के लिए साइन इन करें', username: 'उपयोगकर्ता नाम', password: 'पासवर्ड', login: 'लॉग इन', needAccount: 'खाता नहीं? साइन अप करें', chats: '💬 चैट', aiHub: '🤖 एआई हब', stories: '📸 स्टोरी', admin: '📊 एडमिन', searchUsers: '🔍 खोजें...', typeMessage: 'संदेश लिखें...', chooseSidebar: 'चैट चुनें', settings: 'सेटिंग्स' }
+  en: { appName: 'Pro Messenger v14', signInSub: 'Sign in to continue', username: 'Username', password: 'Password', login: 'Log In', needAccount: 'Need an account? Sign up here', chats: '💬 Chats', aiHub: '🤖 AI Hub', stories: '📸 Stories', admin: '📊 Admin', searchUsers: '🔍 Search users...', typeMessage: 'Type a message...', chooseSidebar: 'Choose from sidebar', settings: 'Settings' },
+  bn: { appName: 'প্রো মেসেঞ্জার v14', signInSub: 'চালিয়ে যেতে সাইন ইন করুন', username: 'ইউজারনেম', password: 'পাসওয়ার্ড', login: 'লগ ইন', needAccount: 'অ্যাকাউন্ট নেই? সাইন আপ করুন', chats: '💬 চ্যাট', aiHub: '🤖 এআই হাব', stories: '📸 স্টোরি', admin: '📊 অ্যাডমিন', searchUsers: '🔍 খুঁজুন...', typeMessage: 'বার্তা লিখুন...', chooseSidebar: 'চ্যাট বেছে নিন', settings: 'সেটিংস' },
+  hi: { appName: 'प्रो मैसेंजर v14', signInSub: 'जारी रखने के लिए साइन इन करें', username: 'उपयोगकर्ता नाम', password: 'पासवर्ड', login: 'लॉग इन', needAccount: 'खाता नहीं? साइन अप करें', chats: '💬 चैट', aiHub: '🤖 एआई हब', stories: '📸 स्टोरी', admin: '📊 एडमिन', searchUsers: '🔍 खोजें...', typeMessage: 'संदेश लिखें...', chooseSidebar: 'चैट चुनें', settings: 'सेटिंग्स' }
 };
 
 function setLanguage(lang, save = true) {
@@ -2447,7 +2575,6 @@ function showToast(msg) {
 }
 
 function onTyping() {
-  // Typing sound with throttle
   const now = Date.now();
   if (typingSoundEnabled && now - typingSoundThrottle > 80) {
     playSound('typing');
